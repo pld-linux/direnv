@@ -1,15 +1,12 @@
 Summary:	Per-directory shell configuration tool
 Name:		direnv
-Version:	2.20.1
+Version:	2.21.3
 Release:	1
 License:	MIT
 Group:		Applications/Shells
 Source0:	https://github.com/direnv/direnv/archive/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	52590d44575e0f6a21663da3dccf5b03
+# Source0-md5:	afab222f7406f90726733f99c095eb0a
 URL:		https://direnv.net
-# Work around bug in markdown->man generation
-# https://github.com/direnv/direnv/pull/113
-Patch0:		%{name}-fix-manpage.patch
 BuildRequires:	golang
 BuildRequires:	rpmbuild(macros) >= 1.647
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
@@ -29,8 +26,6 @@ mv %{name}-*/man .
 mv %{name}-*/docs .
 mv %{name}-*/*.md .
 mv %{name}-*/*.txt .
-
-%patch0 -p1
 
 # don't you love go?
 install -d src/$(dirname %{import_path})
@@ -56,7 +51,6 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc LICENSE.md
 %doc docs CHANGELOG.md README.md version.txt
 %attr(755,root,root) %{_bindir}/direnv
 %{_mandir}/man1/direnv-stdlib.1*
