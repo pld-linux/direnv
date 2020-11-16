@@ -1,11 +1,11 @@
 Summary:	Per-directory shell configuration tool
 Name:		direnv
-Version:	2.21.3
+Version:	2.24.0
 Release:	1
 License:	MIT
 Group:		Applications/Shells
 Source0:	https://github.com/direnv/direnv/archive/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	afab222f7406f90726733f99c095eb0a
+# Source0-md5:	94b1569c9277eebaa3f740540f6d24a3
 URL:		https://direnv.net
 BuildRequires:	golang
 BuildRequires:	rpmbuild(macros) >= 1.647
@@ -53,6 +53,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(644,root,root,755)
 %doc docs CHANGELOG.md README.md version.txt
 %attr(755,root,root) %{_bindir}/direnv
+%{_mandir}/man1/direnv-fetchurl.1*
 %{_mandir}/man1/direnv-stdlib.1*
 %{_mandir}/man1/direnv.1*
 %{_mandir}/man1/direnv.toml.1*
