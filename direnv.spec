@@ -1,47 +1,40 @@
 Summary:	Per-directory shell configuration tool
 Name:		direnv
-Version:	2.24.0
+Version:	2.37.1
 Release:	1
 License:	MIT
 Group:		Applications/Shells
+#Source0Download: https://github.com/direnv/direnv/releases
 Source0:	https://github.com/direnv/direnv/archive/v%{version}/%{name}-%{version}.tar.gz
-# Source0-md5:	94b1569c9277eebaa3f740540f6d24a3
+# Source0-md5:	e9279513fc4be9a584288366625c0558
+# cd %{name}-%{version}
+# go mod vendor
+# tar cJf ../%{name}-vendor-%{version}.tar.xz vendor
+Source1:	%{name}-vendor-%{version}.tar.xz
+# Source1-md5:	4a3cd3046254f03b080ebfe84e3e9389
 URL:		https://direnv.net
-BuildRequires:	golang
+BuildRequires:	golang >= 1.24
 BuildRequires:	rpmbuild(macros) >= 1.647
+BuildRequires:	xz
+ExclusiveArch:	%{go_arches}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
-# go stuff
-%define _enable_debug_packages 0
-%define gobuild(o:) go build -ldflags "${LDFLAGS:-} -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \\n')" -a -v %{?debug:-x} %{?**};
-%define import_path	github.com/direnv/direnv
+%undefine	_debugsource_packages
 
 %description
 direnv augments existing shells with a new feature that can load and
 unload environment variables depending on the current directory.
 
 %prep
-%setup -qc
-mv %{name}-*/man .
-mv %{name}-*/docs .
-mv %{name}-*/*.md .
-mv %{name}-*/*.txt .
-
-# don't you love go?
-install -d src/$(dirname %{import_path})
-mv %{name}-* src/%{import_path}
-cd src/%{import_path}
+%setup -q -a1
 
 %build
-export GOPATH=$(pwd)
-cd src/%{import_path}
-export PATH=$(pwd):$PATH
-%gobuild -o $GOPATH/bin/%{name} %{import_path}
+%__go build -mod=vendor -o %{name}
 
 %install
 rm -rf $RPM_BUILD_ROOT
 install -d $RPM_BUILD_ROOT%{_bindir}
-install -p bin/* $RPM_BUILD_ROOT%{_bindir}
+install -p %{name} $RPM_BUILD_ROOT%{_bindir}
 
 install -d $RPM_BUILD_ROOT%{_mandir}/man1
 install -p man/*.1 $RPM_BUILD_ROOT%{_mandir}/man1
@@ -51,7 +44,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(644,root,root,755)
-%doc docs CHANGELOG.md README.md version.txt
+%doc CHANGELOG.md README.md docs version.txt
 %attr(755,root,root) %{_bindir}/direnv
 %{_mandir}/man1/direnv-fetchurl.1*
 %{_mandir}/man1/direnv-stdlib.1*
